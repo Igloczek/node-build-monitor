@@ -60,51 +60,50 @@ module.exports = function () {
     function getProjectBuildsApiUrl (project, page, per_page) {
         var base = self.config.url + '/',
             query = '?page=' + page + '&per_page=' + per_page;
-        return base + 'api/v3/projects/' + project.id + '/builds' + query;
+        return base + 'api/v3/projects/' + project.id + '/pipelines' + query;
     }
 
     function getBuildApiUrl (project, build) {
         var base = self.config.url + '/';
-        return base + 'api/v3/projects/' + project.id + '/builds/' + build.id;
+        return base + 'api/v3/projects/' + project.id + '/pipelines/' + build.id;
     }
 
     function getBuildId (project, build) {
-        return project.id + '-' + build.ref + '-' + build.stage;
+        return build.id;
     }
 
     //noinspection JSUnusedLocalSymbols
-    function getBuildNumber (project, build) {
+    function getBuildNumber (build) {
+        return 'Pipeline #' + build.id;
+    }
+
+    //noinspection JSUnusedLocalSymbols
+    function getBuildProject (project) {
         return project.name_with_namespace;
     }
 
     //noinspection JSUnusedLocalSymbols
-    function getBuildProject (project, build) {
-        return build.ref;
+    function getBuildIsRunning (build) {
+        return (build.status === 'running' || build.status === 'pending');
     }
 
     //noinspection JSUnusedLocalSymbols
-    function getBuildIsRunning (project, build) {
-        return (build.status === 'running' ||
-                build.status === 'pending');
-    }
-
-    //noinspection JSUnusedLocalSymbols
-    function getBuildStartedAt (project, build) {
+    function getBuildStartedAt (build) {
         return new Date(build.started_at);
     }
 
     //noinspection JSUnusedLocalSymbols
-    function getBuildFinishedAt (project, build) {
+    function getBuildFinishedAt (build) {
         return new Date(build.finished_at);
     }
 
     //noinspection JSUnusedLocalSymbols
-    function getBuildRequestedFor (project, build) {
-        return build.commit && build.commit.author_name;
+    function getBuildRequestedFor (build) {
+        return build.user ? build.user.name : '';
     }
 
     //noinspection JSUnusedLocalSymbols
-    function getBuildStatus (project, build) {
+    function getBuildStatus (build) {
         switch (build.status) {
             case 'pending':
                 return '#ffa500';
@@ -120,33 +119,32 @@ module.exports = function () {
     }
 
     //noinspection JSUnusedLocalSymbols
-    function getBuildStatusText (project, build) {
-        return build.stage + ' ' + build.status;
+    function getBuildStatusText (build) {
+        return build.status;
     }
 
     //noinspection JSUnusedLocalSymbols
-    function getBuildReason (project, build) {
-        return build.commit && build.commit.message;
-
+    function getBuildReason (build) {
+        return build.tag ? 'tag/' + build.ref : build.ref;
     }
 
     function getBuildUrl (project, build) {
         var base = self.config.url + '/';
-        return base + project.path_with_namespace + '/builds/' + build.id;
+        return base + project.path_with_namespace + '/pipelines/' + build.id;
     }
 
     function getBuildMonitorBuild (project, build) {
         return {
             id: getBuildId(project, build),
-            number: getBuildNumber(project, build),
-            project: getBuildProject(project, build),
-            isRunning: getBuildIsRunning(project, build),
-            startedAt: getBuildStartedAt(project, build),
-            finishedAt: getBuildFinishedAt(project, build),
-            requestedFor: getBuildRequestedFor(project, build),
-            status: getBuildStatus(project, build),
-            statusText: getBuildStatusText(project, build),
-            reason: getBuildReason(project, build),
+            number: getBuildNumber(build),
+            project: getBuildProject(project),
+            isRunning: getBuildIsRunning(build),
+            startedAt: getBuildStartedAt(build),
+            finishedAt: getBuildFinishedAt(build),
+            requestedFor: getBuildRequestedFor(build),
+            status: getBuildStatus(build),
+            statusText: getBuildStatusText(build),
+            reason: getBuildReason(build),
             hasErrors: false,
             hasWarnings: false,
             url: getBuildUrl(project, build)
@@ -252,40 +250,6 @@ module.exports = function () {
         });
     }
 
-    function reduceBuilds(builds, callback) {
-        const seen = {};
-        let latest = null;
-
-        results = builds
-            .filter(build => {
-                const key = build.monitor.id;
-                if (typeof seen[key] === 'undefined') {
-                    seen[key] = build;
-                    return true;
-                }
-                else if (seen[key].monitor.startedAt < build.monitor.startedAt) {
-                    seen[key] = build;
-                    return true;
-                } else {
-                    return false;
-                }
-            })
-            .filter(build => {
-                if (!latest || build.monitor.startedAt > latest) {
-                    latest = build.monitor.startedAt;
-                    return true;
-                } else {
-                    return build.monitor.isRunning || build.status === 'failing';
-                }
-            });
-
-        if (typeof callback === 'function') {
-            process.nextTick(function() {
-                callback(results);
-            });
-        }
-    }
-
     function fetchProjectBuilds(project, callback) {
         requestFirstPage(function (page, per_page) {
             return getProjectBuildsApiUrl(project, page, per_page);
@@ -295,16 +259,12 @@ module.exports = function () {
                 results.find(item => item.id === build.id).expires = getBuildExpiration(build);
             });
 
+            if (results.length) {
+                log(project.name_with_namespace + ' | ' + results.length + ' current builds.');
+            }
+
             process.nextTick(function() {
-                reduceBuilds(results, function(results) {
-                    if (results.length) {
-                        log(project.name_with_namespace + ' | ' +
-                            results.length + ' current builds.');
-                    }
-                    process.nextTick(function() {
-                        callback(results);
-                    });
-                });
+                callback(results);
             });
         });
     }

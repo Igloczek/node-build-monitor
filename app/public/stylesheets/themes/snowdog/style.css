@@ -1,0 +1,90 @@
+.snowdog-theme * {
+  box-sizing: border-box;
+}
+
+.snowdog-theme p {
+  margin: 0;
+  display: inline;
+}
+
+.snowdog-theme .flex-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+}
+
+.snowdog-theme .flex-item {
+  display: flex;
+  flex: 33.33%;
+  padding: 10px;
+}
+
+.snowdog-theme .flex-item-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  padding: 25px;
+}
+
+.snowdog-theme .flex-item .project {
+  margin: 0;
+  font-size: 35px;
+  font-weight: bold;
+}
+
+.snowdog-theme .flex-item .main-block {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 30px;
+}
+
+.snowdog-theme .flex-item .reason-block {
+  display: flex;
+  align-items: center;
+  margin: 10px;
+}
+
+.snowdog-theme .flex-item .reason-icon {
+  font-size: 40px;
+}
+
+.snowdog-theme .flex-item .reason {
+  margin-left: 10px;
+}
+
+.snowdog-theme .flex-item .user-block {
+  display: flex;
+  align-items: center;
+  margin: 10px;
+}
+
+.snowdog-theme .flex-item .user-block img{
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+  border-radius: 50px;
+}
+
+.snowdog-theme .flex-item .duration-block {
+  display: flex;
+  align-items: center;
+  font-size: 20px;
+  line-height: 30px;
+}
+
+.snowdog-theme .flex-item .duration-icon {
+  font-size: 30px;
+}
+
+.snowdog-theme .flex-item .time {
+  display: inline-block;
+  margin-left: 10px;
+}

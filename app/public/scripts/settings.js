@@ -6,7 +6,7 @@ define(['cookies'], function (cookies) {
     var settings = { };
 
     Object.defineProperty(settings, 'theme', {
-        get: function() { return cookies.get('theme') || 'default'; },
+        get: function() { return cookies.get('theme') || 'snowdog'; },
         set: function(value) { cookies.set('theme', value); },
         enumerable: true
     });

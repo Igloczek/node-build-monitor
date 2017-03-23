@@ -103,6 +103,11 @@ module.exports = function () {
     }
 
     //noinspection JSUnusedLocalSymbols
+    function getUserAvatar (build) {
+        return build.user ? build.user.avatar_url : '';
+    }
+
+    //noinspection JSUnusedLocalSymbols
     function getBuildStatus (build) {
         switch (build.status) {
             case 'pending':
@@ -142,6 +147,7 @@ module.exports = function () {
             startedAt: getBuildStartedAt(build),
             finishedAt: getBuildFinishedAt(build),
             requestedFor: getBuildRequestedFor(build),
+            avatar: getUserAvatar(build),
             status: getBuildStatus(build),
             statusText: getBuildStatusText(build),
             reason: getBuildReason(build),

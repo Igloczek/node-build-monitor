@@ -16,6 +16,7 @@ define(['ko', 'moment', 'countdown'], function (ko, moment, countdown) {
         this.hasWarnings = ko.observable();
         this.hasErrors = ko.observable();
         this.url = ko.observable();
+        this.avatar = ko.observable();
 
         this.update = function (build) {
             this.id(build.id);
@@ -32,6 +33,7 @@ define(['ko', 'moment', 'countdown'], function (ko, moment, countdown) {
             this.hasWarnings(build.hasWarnings);
             this.hasErrors(build.hasErrors);
             this.url(build.url);
+            this.avatar(build.avatar);
         };
 
         this.update(build);
@@ -47,14 +49,14 @@ define(['ko', 'moment', 'countdown'], function (ko, moment, countdown) {
 
         this.time = ko.forcibleComputed(function () {
             return this.isRunning() ?
-                'started ' + moment(this.startedAt()).fromNow() :
-                'finished ' + moment(this.finishedAt()).fromNow();
+                'Started ' + moment(this.startedAt()).fromNow() :
+                'Finished ' + moment(this.finishedAt()).fromNow();
         }, this);
 
         this.duration = ko.forcibleComputed(function () {
             return this.isRunning() ?
-                'running for ' + countdown(this.startedAt()).toString() :
-                'ran for ' + countdown(this.startedAt(), this.finishedAt()).toString();
+                'Running for ' + countdown(this.startedAt()).toString() :
+                'Ran for ' + countdown(this.startedAt(), this.finishedAt()).toString();
         }, this);
 
         this.isMenuAvailable = ko.computed(function () {

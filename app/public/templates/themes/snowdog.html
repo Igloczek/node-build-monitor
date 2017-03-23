@@ -1,0 +1,27 @@
+<div class="snowdog-theme full-size">
+  <div class="flex-container" data-bind="foreach: builds">
+    <div data-bind="hover: isMenuVisible" class="flex-item">
+      <div data-bind="animateCss: style" class="flex-item-inner">
+        <h1 data-bind="text: project" class="project"></h1>
+
+        <div class="main-block">
+          <div class="reason-block">
+            <span class="reason-icon fa fa-cog"></span>
+            <p data-bind="text: reason" class="reason"></p>
+          </div>
+
+          <div class="user-block">
+            <img data-bind="attr:{ src: avatar }">
+            <p data-bind="text: requestedFor" class="for"></p>
+          </div>
+        </div>
+
+        <div class="duration-block">
+          <span class="duration-icon fa fa-clock-o"></span>
+          <p data-bind="text: time" class="time"></p>
+          <p data-bind="text: duration" class="time"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
